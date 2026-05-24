@@ -1,0 +1,41 @@
+name: 아파트 호가 자동 수집
+
+on:
+  schedule:
+    # 매일 밤 11:00 (KST는 UTC+9이므로 14:00 UTC)
+    - cron: '0 14 * * *'
+  
+  # 수동 트리거 가능 (테스트용)
+  workflow_dispatch:
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 리포지토리 체크아웃
+        uses: actions/checkout@v3
+      
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: 의존성 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: 호가 수집 및 노션 저장
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: python crawler.py
+      
+      - name: 실행 로그 커밋
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add crawl_log.json || true
+          git commit -m "Auto: 호가 수집 $(date +%Y-%m-%d)" || true
+          git push || true
