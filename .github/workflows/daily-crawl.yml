@@ -26,8 +26,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: Chrome 설치 확인
-        run: which google-chrome || apt-get update && apt-get install -y google-chrome-stable
+      - name: Chrome 및 Chromium 설치
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
       
       - name: 호가 자동 크롤링 및 노션 저장
         env:
