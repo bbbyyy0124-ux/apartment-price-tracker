@@ -26,11 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: 호가 수집 및 노션 저장
+      - name: Chrome 설치 확인
+        run: which google-chrome || apt-get update && apt-get install -y google-chrome-stable
+      
+      - name: 호가 자동 크롤링 및 노션 저장
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
-        run: python crawler.py
+        run: python crawler_selenium.py
       
       - name: 실행 로그 커밋
         run: |
